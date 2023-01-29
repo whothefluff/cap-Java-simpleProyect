@@ -1,0 +1,53 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.PrivilegedUser",
+      "description": "PrivilegedUser"
+    },
+    {
+      "name": "$XSAPPNAME.GuestUser",
+      "description": "GuestUser"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "PrivilegedUser",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.PrivilegedUser"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "GuestUser",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.GuestUser"
+      ],
+      "attribute-references": []
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "SimpleOrdersGuestUser",
+      "description": "Orders user",
+      "role-template-references": [
+        "$XSAPPNAME.GuestUser"
+      ]
+    },
+    {
+      "name": "SimpleOrdersPrivilegedUser",
+      "description": "Orders user",
+      "role-template-references": [
+        "$XSAPPNAME.PrivilegedUser"
+      ]
+    }
+  ],
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "https://11d69efftrial-dev-cap-java-simpleproyect-srv.cfapps.us10-001.hana.ondemand.com"
+    ],
+		"credential-types": ["instance-secret","binding-secret","x509"]
+  }
+}

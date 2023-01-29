@@ -1,0 +1,47 @@
+@hostname = localhost
+@port = 8080
+@host = {{hostname}}:{{port}}
+@ODataSuffix = odata/v4
+@authName1 = "priv"
+@authPass1 = "2"
+@authName2 = guest
+@authPass2 = 1
+
+# @name getHeaders
+GET http://{{host}}/{{ODataSuffix}}/PurchaseOrders/Headers HTTP/1.1
+Authorization: Digest {{authName1}}:{{authPass1}}
+
+###
+
+# @name getHeaders
+GET http://{{host}}/{{ODataSuffix}}/PurchaseOrders/Headers?$expand=items HTTP/1.1
+Authorization: Basic privileged:
+
+###
+
+# @name getCountries
+GET http://{{host}}/{{ODataSuffix}}/PurchaseOrders/Countries HTTP/1.1
+Authorization:  Digest {{authName1}}:{{authPass1}}
+
+###
+
+# @name setHeaders
+POST http://{{host}}/{{ODataSuffix}}/PurchaseOrders/Headers HTTP/1.1
+Content-Type: application/json
+Authorization: Digest {{authName1}}:{{authPass1}}
+
+{
+  "status": "0",
+  "country_code": "US",
+  "notes": [],
+  "items": [ 
+    { 
+      "ID": "50",
+      "text": "Some info"
+    },
+    { 
+      "ID": "500",
+      "text": "Some other info"
+    } 
+  ]
+}

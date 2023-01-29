@@ -1,0 +1,21 @@
+{
+  "requires": {
+    "[hybrid]": {
+      "auth": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
+          "org": "11d69efftrial",
+          "space": "dev",
+          "instance": "cap-Java-simpleProyect-auth",
+          "key": "cap-Java-simpleProyect-auth-key",
+          "resolved": false
+        },
+        "kind": "xsuaa",
+        "vcap": {
+          "name": "auth"
+        }
+      }
+    }
+  }
+}

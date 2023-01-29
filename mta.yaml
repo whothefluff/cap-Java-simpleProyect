@@ -1,0 +1,88 @@
+_schema-version: '3.1'
+ID: cap-Java-simpleProyect
+version: 1.0.0-SNAPSHOT
+description: "cap-Java-simpleProyect application"
+parameters:
+  enable-parallel-deployments: true
+modules:
+  - name: cap-Java-simpleProyect-srv
+    type: java
+    path: srv
+    parameters:
+      buildpack: java_buildpack
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true
+      build-result: target/*-exec.jar
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: cap-Java-simpleProyect-db
+      - name: cap-Java-simpleProyect-auth
+      - name: cap-Java-simpleProyect-dest
+
+  - name: cap-Java-simpleProyect-db-deployer
+    type: hdb
+    path: db
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build
+    requires:
+      - name: cap-Java-simpleProyect-db
+
+  - name: cap-Java-simpleProyect-content
+    type: com.sap.application.content
+    requires:
+      - name: cap-Java-simpleProyect-auth
+        parameters:
+          service-key:
+            name: cap-Java-simpleProyect-auth-key
+      - name: cap-Java-simpleProyect-dest
+        parameters:
+          content-target: true
+      - name: srv-api
+    build-parameters:
+      no-source: true
+    parameters:
+      content:
+        subaccount:
+          existing_destinations_policy: update
+          destinations:
+            - Name: cap-Java-simpleProyect-auth-HTTP
+              Description: "OAth2 destination for cap-Java-simpleProyect-auth"
+              URL: ~{srv-api/srv-url}
+              ServiceInstanceName: cap-Java-simpleProyect-auth
+              ServiceKeyName: cap-Java-simpleProyect-auth-key
+              Authentication: OAuth2UserTokenExchange
+              WebIDEEnabled: "true"
+              HTML5.DynamicDestination: "true"
+              TrustAll: "true"
+
+resources:
+  - name: cap-Java-simpleProyect-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: cap-Java-simpleProyect-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: cap-Java-simpleProyect-${org}-${space}
+        tenant-mode: dedicated
+  - name: cap-Java-simpleProyect-dest
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
